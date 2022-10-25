@@ -23,15 +23,40 @@
 import config as cf
 import model
 import csv
+import sys
+from DISClib.ADT import list as lt
 
+csv.field_size_limit(2147483647)
+
+default_limit = 1000
+sys.setrecursionlimit(default_limit*10)
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # catalog es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer()
+    return analyzer
 
 # Funciones para la carga de datos
+def loadData(analyzer, porcentajedatos):
+    
+    info = [ "game", "category"]
+
+    for x in info:
+        file = cf.data_dir + x + "_data_utf-8-" + porcentajedatos + ".csv" #ruta archivo en una variable 
+        input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
+
+        for game in input_file:
+            model.addVideojuegos(analyzer, game)
+
+    return analyzer
 
 # Funciones de ordenamiento
 
