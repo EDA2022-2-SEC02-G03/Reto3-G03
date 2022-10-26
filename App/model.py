@@ -26,6 +26,7 @@
 
 from select import select
 import time
+from App.view import LimiteInferior, LimiteSuperior
 import config as cf
 from datetime import datetime as dt
 from DISClib.ADT import list as lt
@@ -83,7 +84,7 @@ def addCategory(analyzer, game):
 
 
 def updatePlatforms(map, game):
-    print(game)
+    #print(game)
     plataforma = game["Platforms"]
     entry = om.get(map, plataforma)
     if entry is None:
@@ -188,6 +189,31 @@ def getLastCategory(analyzer):
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def Juegos_plataforma_rango(analyzer,plataforma_buscada,inferior,superior):
+
+
+    x = om.keys(analyzer,inferior,superior)
+
+    lst = lt.newList()
+    
+
+    for i in om.get(analyzer,x):
+
+        if i == plataforma_buscada:
+
+            lt.addLast(lst,i)
+
+
+
+    return lst
+
+
+
+
+
+
+
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

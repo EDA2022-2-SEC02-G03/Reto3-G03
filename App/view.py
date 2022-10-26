@@ -25,6 +25,8 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+from tabulate import tabulate
+from textwrap import wrap
 
 
 """
@@ -33,6 +35,46 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+def tabulateResults(lista):
+    """
+    Recibe una lista con peliculas y/o series ordenada y tabula los primeros y los ultimos
+    3 elementos
+    """
+
+    if lt.size(lista) > 6:
+        first3 = lt.subList(lista, 1, 3)
+        last3 = lt.subList(lista, lt.size(lista) - 2, 3)
+        elems = lt.newList("ARRAY_LIST")
+        for elem in lt.iterator(first3):
+            lt.addLast(elems, elem)
+        for elem in lt.iterator(last3):
+            lt.addLast(elems, elem)
+        elems = elems['elements']
+    else:
+        
+        allelem = lt.subList(lista,1,lt.size(lista))
+        
+        elems = lt.newList("ARRAY_LIST")
+        for elem in lt.iterator(allelem):
+            lt.addLast(elems, elem)
+        elems = elems['elements']
+
+
+    newElems = []
+    for elem in elems:
+        newElem = elem.copy()
+        for key in newElem.keys():
+            if type(newElem[key]) == list:
+                newElem[key] = ', '.join(newElem[key])
+            elif type(newElem[key]) == datetime:
+                newElem[key] = datetime.strftime(newElem[key], '%Y-%m-%d')
+            if type(newElem[key]) == str:
+                newElem[key] = '\n'.join(wrap(newElem[key], 16))
+        newElems.append(newElem)
+
+    print(tabulate(newElems, headers='keys', tablefmt='fancy_grid'))
+
+    
 
 def printMenu():
     print("Bienvenido")
@@ -68,20 +110,29 @@ while True:
         juegos=controller.getFirstGames(cont)
         categorias=controller.getFirstCategory(cont)
         print("Primeros y últimos 3 juegos cargados: ")
-        print(juegos)
+        print(juegos[0]['elements'])
+        
+        #tabulateResults
         print("Primeras y últimas 3 categorias cargadas: ")
-        print(categorias)
-        print("Videojuegos cargados: " + str(controller.videojuegosSize(cont)))
-        print("Categorias cargadas: " + str(controller.categorySize(cont)))
-        print("Altura del arbol de videojuegos: " + str(controller.indexHeight(cont)))
-        print("Altura del arbol de categorias: " + str(controller.indexHeightCategory(cont)))
-        print("Elementos en el arbol de videojuegos: " + str(controller.indexSize(cont)))
-        print("Elementos en el arbol de categorias: " + str(controller.indexSizeCategory(cont)))
-        print("Tiempo [ms]: ", f"{control[0]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{control[1]:.3f}")
+        print(categorias[0]['elements'])
+        #print(categorias)
+        #print("Videojuegos cargados: " + str(controller.videojuegosSize(cont)))
+        #print("Categorias cargadas: " + str(controller.categorySize(cont)))
+        #print("Altura del arbol de videojuegos: " + str(controller.indexHeight(cont)))
+        #print("Altura del arbol de categorias: " + str(controller.indexHeightCategory(cont)))
+        #print("Elementos en el arbol de videojuegos: " + str(controller.indexSize(cont)))
+        #print("Elementos en el arbol de categorias: " + str(controller.indexSizeCategory(cont)))
+        #print("Tiempo [ms]: ", f"{control[0]:.3f}", "  ||  ",
+              #"Memoria [kB]: ", f"{control[1]:.3f}")
 
     elif int(inputs[0]) == 3: # REQUERIMIENTO 1
-        pass
+        plataforma = input('Ingrese la plataforma: ')
+        LimiteInferior = input('Ingrese el limite inferior de la fecha: ')
+        LimiteSuperior = input('Ingrese el limite Superior de la fecha: ')
+
+        lst = controller.Juegos_plataforma_rango(plataforma,LimiteInferior,LimiteSuperior)
+
+        
     
     elif int(inputs[0]) == 4: # REQUERIMIENTO 2
         pass
