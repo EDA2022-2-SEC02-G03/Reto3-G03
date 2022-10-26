@@ -50,15 +50,17 @@ def loadData(analyzer, porcentajedatos):
     info = [ "game", "category"]
 
     for x in info:
-        file = cf.data_dir + x + "_data_utf-8-" + porcentajedatos + ".csv" #ruta archivo en una variable 
-        input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
+        
 
         if x == "game":
-
+            file = cf.data_dir + x + "_data_utf-8-" + porcentajedatos + ".csv" #ruta archivo en una variable 
+            input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
             for game in input_file:
                 model.addVideojuegos(analyzer, game)
            
         else:
+            file= cf.data_dir + x + "_data_urf-8-" + porcentajedatos + ".csv" #ruta archivo en una variable
+            input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
             for game in input_file:
                 model.addCategory(analyzer, game)
 
@@ -68,3 +70,13 @@ def loadData(analyzer, porcentajedatos):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def getFirstGames(analyzer):
+    firstgames = model.getFirstGames(analyzer)
+    lastgames = model.getLastGames(analyzer)
+    return firstgames, lastgames
+
+def getFirstCategory(analyzer):
+    firstcategory = model.getFirstCategory(analyzer)
+    lastcategory = model.getLastCategory(analyzer)
+    return firstcategory, lastcategory

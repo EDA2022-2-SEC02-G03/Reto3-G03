@@ -132,6 +132,59 @@ def newIDEntry(IDgrp, crime):
     lt.addLast(IDentry["lstIDs"], crime)
     return IDentry
 
+def getFirstGames(analyzer):
+    games = analyzer["videojuegos"]
+    firstgames= lt.newList(datastructure='ARRAY_LIST')
+    if lt.size(games) > 3:
+        for i in range(1,4):
+            game= lt.getElement(games,i)
+            lt.addLast(firstgames,game)
+    else:
+        for i in range (1,4):
+            game= lt.getElement(games,i)
+            lt.addLast(firstgames,game)
+    return firstgames
+
+def getLastGames(analyzer):
+    games = analyzer["videojuegos"]
+    lastgames= lt.newList(datastructure='ARRAY_LIST')
+    if lt.size(games) > 3:
+        for i in range(lt.size(games)-2,lt.size(games)+1):
+            game= lt.getElement(games,i)
+            lt.addLast(lastgames,game)
+    else:
+        for i in range (1,4):
+            game= lt.getElement(games,i)
+            lt.addLast(lastgames,game)
+    return lastgames
+
+def getFirstCategory(analyzer):
+    categories = analyzer["categorias"]
+    firstcategories= lt.newList(datastructure='ARRAY_LIST')
+    if lt.size(categories) > 3:
+        for i in range(1,4):
+            category= lt.getElement(categories,i)
+            lt.addLast(firstcategories,category)
+    else:
+        for i in range (1,4):
+            category= lt.getElement(categories,i)
+            lt.addLast(firstcategories,category)
+    return firstcategories
+
+def getLastCategory(analyzer):
+    categories = analyzer["categorias"]
+    lastcategories= lt.newList(datastructure='ARRAY_LIST')
+    if lt.size(categories) > 3:
+        for i in range(lt.size(categories)-2,lt.size(categories)+1):
+            category= lt.getElement(categories,i)
+            lt.addLast(lastcategories,category)
+    else:
+        for i in range (1,4):
+            category= lt.getElement(categories,i)
+            lt.addLast(lastcategories,category)
+    return lastcategories
+
+
 # Funciones para creacion de datos
 
 # Funciones de consulta
@@ -139,6 +192,7 @@ def newIDEntry(IDgrp, crime):
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+
 
 # ==============================
 # Funciones de Comparacion

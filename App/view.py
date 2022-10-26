@@ -65,9 +65,21 @@ while True:
         porcentajedatos = input(
             '\nIndique el porcentaje de datos a cargar (small, 5pct, 10pct, 20pct, 30pct, 50pct, 80pct, large): ')
         control = controller.loadData(cont, porcentajedatos)
+        juegos=controller.getFirstGames(cont)
+        categorias=controller.getFirstCategory(cont)
+        print("Primeros y últimos 3 juegos cargados: ")
+        print(juegos)
+        print("Primeras y últimas 3 categorias cargadas: ")
+        print(categorias)
+        print("Videojuegos cargados: " + str(controller.videojuegosSize(cont)))
+        print("Categorias cargadas: " + str(controller.categorySize(cont)))
+        print("Altura del arbol de videojuegos: " + str(controller.indexHeight(cont)))
+        print("Altura del arbol de categorias: " + str(controller.indexHeightCategory(cont)))
+        print("Elementos en el arbol de videojuegos: " + str(controller.indexSize(cont)))
+        print("Elementos en el arbol de categorias: " + str(controller.indexSizeCategory(cont)))
+        print("Tiempo [ms]: ", f"{control[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{control[1]:.3f}")
 
-
-        print(control)
     elif int(inputs[0]) == 3: # REQUERIMIENTO 1
         pass
     
