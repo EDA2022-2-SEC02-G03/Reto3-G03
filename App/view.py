@@ -66,8 +66,8 @@ def tabulateResults(lista):
         for key in newElem.keys():
             if type(newElem[key]) == list:
                 newElem[key] = ', '.join(newElem[key])
-            elif type(newElem[key]) == datetime:
-                newElem[key] = datetime.strftime(newElem[key], '%Y-%m-%d')
+            elif type(newElem[key]) == "datetime":
+                newElem[key] = "datetime.strftime(newElem[key]", '%Y-%m-%d'
             if type(newElem[key]) == str:
                 newElem[key] = '\n'.join(wrap(newElem[key], 16))
         newElems.append(newElem)
@@ -109,6 +109,7 @@ while True:
         control = controller.loadData(cont, porcentajedatos)
         juegos=controller.getFirstGames(cont)
         categorias=controller.getFirstCategory(cont)
+        
         print("Primeros y últimos 3 juegos cargados: ")
         print(juegos[0]['elements'])
         

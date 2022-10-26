@@ -26,7 +26,7 @@
 
 from select import select
 import time
-from App.view import LimiteInferior, LimiteSuperior
+
 import config as cf
 from datetime import datetime as dt
 from DISClib.ADT import list as lt
