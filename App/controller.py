@@ -53,8 +53,15 @@ def loadData(analyzer, porcentajedatos):
         file = cf.data_dir + x + "_data_utf-8-" + porcentajedatos + ".csv" #ruta archivo en una variable 
         input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
 
-        for game in input_file:
-            model.addVideojuegos(analyzer, game)
+        if x == "game":
+
+            for game in input_file:
+                model.addVideojuegos(analyzer, game)
+           
+        else:
+            for game in input_file:
+                model.addCategory(analyzer, game)
+
 
     return analyzer
 

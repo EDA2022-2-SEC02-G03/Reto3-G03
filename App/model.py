@@ -52,15 +52,11 @@ def newAnalyzer():
     Retorna el analizador inicializado.
     """
     analyzer = {'videojuegos': None,
-                'plataformas': None,
-                'fechaLanzamiento': None,
-                'fechaRecord': None,
-                'intentos': None,
-                'duracion': None,
+                "categorias": None 
                 }
 
     analyzer["videojuegos"] = lt.newList("SINGLE_LINKED", compareIds)
-    analyzer['plataformas'] = om.newMap(omaptype='BST')
+    analyzer['categorias'] = lt.newList("SINGLE_LINKED", compareIds)
                                       
     
     return analyzer
@@ -70,10 +66,18 @@ def newAnalyzer():
 def addVideojuegos(analyzer, game): 
 
     lt.addLast(analyzer["videojuegos"], game)
-    updatePlatforms(analyzer["plataformas"], game)
     
 
     return analyzer
+
+def addCategory(analyzer, game): 
+
+    lt.addLast(analyzer["categorias"], game)
+
+    
+
+    return analyzer
+
 
 
 
@@ -96,7 +100,7 @@ def newPlatformsEntry(game):
     entry = {'categoryIndex': None, 'lstgames': None}
     entry['categoryIndex'] = m.newMap(numelements=30,
                                      maptype='PROBING',
-                                     comparefunction=compareIds)
+                                     )
     entry['lstgames'] = lt.newList('SINGLE_LINKED', compareIds)
     return entry
 
