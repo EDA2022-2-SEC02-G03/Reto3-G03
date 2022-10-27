@@ -34,6 +34,7 @@ from DISClib.ADT import orderedmap as om
 from DISClib.ADT import map as m
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as ms
 assert cf
 
 """
@@ -53,23 +54,82 @@ def newAnalyzer():
     Retorna el analizador inicializado.
     """
     analyzer = {'videojuegos': None,
-                "categorias": None 
+                "categorias": None, "Game By Release Date":None
                 }
 
     analyzer["videojuegos"] = lt.newList("SINGLE_LINKED", compareIds)
     analyzer['categorias'] = lt.newList("SINGLE_LINKED", compareIds)
-                                      
+    analyzer['Game By Release Date'] = om.newMap(omaptype='RBT', comparefunction=compareDates)
+    analyzer['Game By Platform'] = m.newMap(numelements=30, maptype='PROBING', comparefunction=comparePlatforms)
+                                     
     
     return analyzer
 
 # Funciones para agregar informacion al catalogo
 
+# ============================== 
+# Carga del Req 1
 def addVideojuegos(analyzer, game): 
 
     lt.addLast(analyzer["videojuegos"], game)
-    
+    updateGame(analyzer, game)
 
     return analyzer
+
+def updateGame(map, game):
+    #Mete al arbol el game segun su fecha de lanzamiento #Req 1
+    """
+    """
+    #Filtrado por plataforma 
+    plataforma=game["Platforms"].split(", ")
+    for i in plataforma:
+        if i=="": #Para cuando no tiene plataformas 
+            continue
+        else:
+            entry = m.get(map["Game By Platform"], i) #Busca la llave en el arbol
+            if entry is None:
+                datentry = newDataEntry(game)
+
+                addDateIndex(datentry, game)
+                m.put(map["Game By Platform"], i, datentry)
+            else:
+                datentry = me.getValue(entry)
+                addDateIndex(datentry, game)
+
+
+def newDataEntry(game):
+    #Crea una valor para la llave en el indice por fecha #Req 1
+    entry = {"omYear": None}
+    entry['omYear'] = om.newMap(omaptype='RBT', comparefunction=compareDates)
+    return entry
+
+def addDateIndex(datentry, game):
+    #Actualizar el valor de la llave #Req 1
+    mapa_ordenado=datentry["omYear"]
+    release_date = game["Release_Date"]
+    release_date= dt.strptime(release_date, '%y-%m-%d')
+    entry = om.get(mapa_ordenado, release_date)
+    if entry is None:
+        datentry = lt.newList('SINGLE_LINKED', compareIds)
+        om.put(mapa_ordenado, release_date, datentry)
+    else:
+        datentry = me.getValue(entry)
+    lt.addLast(datentry, game)
+
+def comparePlatforms(keyname, platform):
+    """
+    Compara dos nombres de categorias
+    """
+    platformentry = me.getKey(platform)
+    if (keyname == platformentry):
+        return 0
+    elif (keyname > platformentry):
+        return 1
+    else:
+        return -1
+    # Compara plataformas #Req 1
+
+
 
 def addCategory(analyzer, game): 
 
@@ -78,9 +138,6 @@ def addCategory(analyzer, game):
     
 
     return analyzer
-
-
-
 
 
 def updatePlatforms(map, game):
@@ -189,23 +246,31 @@ def getLastCategory(analyzer):
 # Funciones para creacion de datos
 
 # Funciones de consulta
-def Juegos_plataforma_rango(analyzer,plataforma_buscada,inferior,superior):
 
+#REQ1 
+def Juegos_plataforma_rango(analyzer,plataforma_buscada,LimiteInferior,LimiteSuperior):
+    abrol=m.get(analyzer["Game By Platform"],plataforma_buscada)
+    LimiteInferior = dt.strptime(LimiteInferior, '%y-%m-%d')
+    LimiteSuperior = dt.strptime(LimiteSuperior, '%y-%m-%d')
+    if abrol is None:
+        return None
+    else:
+        arbol=me.getValue(abrol)
+        arbol=arbol["omYear"]
+        lista=om.values(arbol,LimiteInferior,LimiteSuperior) #Queda guaradada una lista de listas, la información ya está ordenada
+        juegos=lt.newList(datastructure='ARRAY_LIST') #Lista vacía donde se van a guardar los juegos
+        for i in lt.iterator(lista):
+            for j in lt.iterator(i):
+                lt.addLast(juegos,j)
 
-    x = om.keys(analyzer,inferior,superior)
+        juegos= ms.sort(juegos,compareYears) #Se ordena la lista de juegos por año    
+        if lt.size(juegos) <5:
+            final=juegos
+        else:
+            final=lt.subList(juegos,1,5)
 
-    lst = lt.newList()
-    
+        return lt.size(juegos),final
 
-    for i in om.get(analyzer,x):
-
-        if i == plataforma_buscada:
-
-            lt.addLast(lst,i)
-
-
-
-    return lst
 
 
 
@@ -218,6 +283,24 @@ def Juegos_plataforma_rango(analyzer,plataforma_buscada,inferior,superior):
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+#Req 1
+def compareYears(game1, game2):
+    release_game1= game1["Release_Date"] #Se obtiene la fecha de lanzamiento del juego 1
+    release_game1= dt.strptime(release_game1, '%y-%m-%d') #Se convierte la fecha de lanzamiento del juego 1 a formato datetime
+    abbreviation1= game1["Abbreviation"] #Se obtiene la abreviación del juego 1
+    release_game2= game2["Release_Date"] #Se obtiene la fecha de lanzamiento del juego 2
+    release_game2= dt.strptime(release_game2, '%y-%m-%d') #Se convierte la fecha de lanzamiento del juego 2 a formato datetime
+    abbreviation2= game2["Abbreviation"] #Se obtiene la abreviación del juego 2
+
+    if release_game1 < release_game2: #Se compara la fecha de lanzamiento del juego 1 con la fecha de lanzamiento del juego 2
+        return True
+    elif release_game1 == release_game2: #Si las fechas de lanzamiento son iguales, se compara la abreviación del juego 1 con la abreviación del juego 2
+        if abbreviation1 < abbreviation2: # Si la abreviación del juego 1 es mayor que la abreviación del juego 2, se retorna True
+            return True
+        else:
+            return False
+    else:
+        return False
 
 
 # ==============================
@@ -232,6 +315,17 @@ def compareIds(id1, id2):
     if (id1 == id2):
         return 0
     elif id1 > id2:
+        return 1
+    else:
+        return -1
+
+def compareDates(date1, date2):
+    """
+    Compara dos fechas
+    """
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
         return 1
     else:
         return -1

@@ -106,8 +106,8 @@ while True:
         print("\nCargando información de videojuegos ....")
         porcentajedatos = input(
             '\nIndique el porcentaje de datos a cargar (small, 5pct, 10pct, 20pct, 30pct, 50pct, 80pct, large): ')
-        control = controller.loadData(cont, porcentajedatos)
-        juegos=controller.getFirstGames(cont)
+        control = controller.loadData(cont, porcentajedatos) #Carga los datos de los archivos
+        juegos=controller.getFirstGames(cont) 
         categorias=controller.getFirstCategory(cont)
         
         print("Primeros y últimos 3 juegos cargados: ")
@@ -130,11 +130,13 @@ while True:
         plataforma = input('Ingrese la plataforma: ')
         LimiteInferior = input('Ingrese el limite inferior de la fecha: ')
         LimiteSuperior = input('Ingrese el limite Superior de la fecha: ')
+        a,lst = controller.Juegos_plataforma_rango(cont,plataforma,LimiteInferior,LimiteSuperior)
+        print("Los 5 juegos más recientes de la plataforma son: ")
+        print(lst)
+        #tabulateResults(lst)
 
-        lst = controller.Juegos_plataforma_rango(plataforma,LimiteInferior,LimiteSuperior)
 
         
-    
     elif int(inputs[0]) == 4: # REQUERIMIENTO 2
         pass
 

@@ -80,6 +80,7 @@ def getFirstCategory(analyzer):
     firstcategory = model.getFirstCategory(analyzer)
     lastcategory = model.getLastCategory(analyzer)
     return firstcategory, lastcategory
-def Juegos_plataforma_rango(plataforma,inferior,superior):
 
-    return model.Juegos_plataforma_rango(plataforma,inferior,superior)
+# Requerimiento 1
+def Juegos_plataforma_rango(analyzer, plataforma,LimiteInferior,LimiteSuperior):
+    return model.Juegos_plataforma_rango(analyzer, plataforma,LimiteInferior,LimiteSuperior)
