@@ -60,9 +60,15 @@ def newAnalyzer():
     analyzer["videojuegos"] = lt.newList("SINGLE_LINKED", compareIds)
     analyzer['categorias'] = lt.newList("SINGLE_LINKED", compareIds)
     analyzer['Game By Release Date'] = om.newMap(omaptype='RBT', comparefunction=compareDates)
-    analyzer['Game By Platform'] = m.newMap(numelements=30, maptype='PROBING', comparefunction=comparePlatforms)
-                                     
+    analyzer['Game By Platform'] = m.newMap(numelements=30, maptype='PROBING', comparefunction=comparePlatforms) 
+    analyzer['Game By Player'] = m.newMap(numelements=30, maptype='PROBING')
     
+
+    
+      
+
+    
+
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -80,8 +86,10 @@ def updateGame(map, game):
     #Mete al arbol el game segun su fecha de lanzamiento #Req 1
     """
     """
+    
     #Filtrado por plataforma 
     plataforma=game["Platforms"].split(", ")
+    
     for i in plataforma:
         if i=="": #Para cuando no tiene plataformas 
             continue
@@ -95,6 +103,7 @@ def updateGame(map, game):
             else:
                 datentry = me.getValue(entry)
                 addDateIndex(datentry, game)
+    
 
 
 def newDataEntry(game):
@@ -106,6 +115,7 @@ def newDataEntry(game):
 def addDateIndex(datentry, game):
     #Actualizar el valor de la llave #Req 1
     mapa_ordenado=datentry["omYear"]
+    
     release_date = game["Release_Date"]
     release_date= dt.strptime(release_date, '%y-%m-%d')
     entry = om.get(mapa_ordenado, release_date)
@@ -131,64 +141,51 @@ def comparePlatforms(keyname, platform):
 
 
 
-def addCategory(analyzer, game): 
+#Carga del Req 2
+def addCategory(analyzer, category): 
 
-    lt.addLast(analyzer["categorias"], game)
-
-    
+    lt.addLast(analyzer["categorias"], category)
+    updateCategory(analyzer, category)
 
     return analyzer
 
-
-def updatePlatforms(map, game):
-    #print(game)
-    plataforma = game["Platforms"]
-    entry = om.get(map, plataforma)
-    if entry is None:
-        platform_entry = newPlatformsEntry(game)
-        om.put(map, plataforma, platform_entry)
-    else:
-        platform_entry = me.getValue(entry)
-    addPlatformsIndex(platform_entry, game)
-    return map
-
-
-def newPlatformsEntry(game): 
+def updateCategory(map, category):
     
-    entry = {'categoryIndex': None, 'lstgames': None}
-    entry['categoryIndex'] = m.newMap(numelements=30,
-                                     maptype='PROBING',
-                                     )
-    entry['lstgames'] = lt.newList('SINGLE_LINKED', compareIds)
+    jugador = category["Players_0"].split(", ")
+    
+    for i in jugador:
+        if i=="":  
+            continue
+        else:
+            entry = m.get(map["Game By Player"], i)
+            if entry is None:
+                datentry = newCategoryEntry(category)
+                addCategoryIndex(datentry, category)
+                m.put(map["Game By Player"], i, datentry)
+            else:
+                datentry = me.getValue(entry)
+                addCategoryIndex(datentry, category)
+    
+
+def newCategoryEntry(category):
+    entry = {"omYear": None}
+    entry['omYear'] = om.newMap(omaptype='RBT', comparefunction=compareDates)
     return entry
 
-
-def addPlatformsIndex(platform_entry, game):
+def addCategoryIndex(datentry, category):
+    mapa_ordenado=datentry["omYear"]
     
-    lst = platform_entry['lstgames']
-    lt.addLast(lst, game)
-    categoryIndex = platform_entry['categoryIndex']
-    category = m.get(categoryIndex, game['Game_Id'])
-    if (category is None):
-        entry = newIDEntry(game['Game_Id'], game)
-        lt.addLast(entry['lstIDs'], game)
-        m.put(categoryIndex, game['Game_Id'], entry)
+    tiempo = category["Time_0"]
+    entry = om.get(mapa_ordenado, tiempo)
+    if entry is None:
+        datentry = lt.newList('SINGLE_LINKED', compareTimes)
+        om.put(mapa_ordenado, tiempo, datentry)
     else:
-        entry = me.getValue(category)
-        lt.addLast(entry['lstIDs'], game)
-    return platform_entry
+        datentry = me.getValue(entry)
+    lt.addLast(datentry, category)
 
 
-def newIDEntry(IDgrp, crime):
-    """
-    Crea una entrada en el indice por tipo de crimen, es decir en
-    la tabla de hash, que se encuentra en cada nodo del arbol.
-    """
-    IDentry = {"ID": None, "lstIDs": None}
-    IDentry["ID"] = IDgrp
-    IDentry["lstIDs"] = lt.newList("SINGLE_LINKED", compareIds)
-    lt.addLast(IDentry["lstIDs"], crime)
-    return IDentry
+
 
 def getFirstGames(analyzer):
     games = analyzer["videojuegos"]
@@ -250,6 +247,7 @@ def getLastCategory(analyzer):
 #REQ1 
 def Juegos_plataforma_rango(analyzer,plataforma_buscada,LimiteInferior,LimiteSuperior):
     abrol=m.get(analyzer["Game By Platform"],plataforma_buscada)
+   
     LimiteInferior = dt.strptime(LimiteInferior, '%y-%m-%d')
     LimiteSuperior = dt.strptime(LimiteSuperior, '%y-%m-%d')
     if abrol is None:
@@ -258,6 +256,7 @@ def Juegos_plataforma_rango(analyzer,plataforma_buscada,LimiteInferior,LimiteSup
         arbol=me.getValue(abrol)
         arbol=arbol["omYear"]
         lista=om.values(arbol,LimiteInferior,LimiteSuperior) #Queda guaradada una lista de listas, la información ya está ordenada
+       
         juegos=lt.newList(datastructure='ARRAY_LIST') #Lista vacía donde se van a guardar los juegos
         for i in lt.iterator(lista):
             for j in lt.iterator(i):
@@ -268,15 +267,42 @@ def Juegos_plataforma_rango(analyzer,plataforma_buscada,LimiteInferior,LimiteSup
             final=juegos
         else:
             final=lt.subList(juegos,1,5)
+        
+        
 
         return lt.size(juegos),final
 
 
+#REQ2
+def Registros_jugador(analyzer,Player_0):
+    abrol=m.get(analyzer["Game By Player"],Player_0)
+    
+    
+    
+    if abrol is None:
+        return None
+    else:
+        arbol=me.getValue(abrol)
+        arbol=arbol["omYear"]
+        lista=om.keySet(arbol) #Queda guaradada una lista de listas, la información ya está ordenada
+        
+        juegos=lt.newList(datastructure='ARRAY_LIST') #Lista vacía donde se van a guardar los juegos
+        for i in lt.iterator(lista):
+            nodo=m.get(arbol,i)
+            valores = me.getValue(nodo)
+            valores_orden= ms.sort(valores,compareTimes)
+            lt.addLast(juegos,valores_orden)
 
+         #Se ordena la lista de juegos por año    
+        if lt.size(juegos) <5:
+            final=juegos
+        else:
+            final=lt.subList(juegos,1,5)
+        
+        
 
-
-
-
+        return lt.size(juegos),final
+   
 
 
 
@@ -329,5 +355,16 @@ def compareDates(date1, date2):
         return 1
     else:
         return -1
+
+def compareTimes(time_1, time_2):
+
+    if (time_1 == time_2):
+        return 0
+    elif (time_1 > time_2):
+        return 1
+    else:
+        return -1
+
+
 
 
