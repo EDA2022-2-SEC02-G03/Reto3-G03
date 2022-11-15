@@ -126,8 +126,8 @@ while True:
         LimiteInferior = input('Ingrese el limite inferior de la fecha: ')
         LimiteSuperior = input('Ingrese el limite Superior de la fecha: ')
         a,lst = controller.Juegos_plataforma_rango(cont,plataforma,LimiteInferior,LimiteSuperior)
-        print("Los 5 juegos más recientes de la plataforma son: ")
-        print(lst)
+        #print("Los 5 juegos más recientes de la plataforma son: ")
+        #print(lst)
         #tabulateResults(lst)
 
 
@@ -136,7 +136,7 @@ while True:
         Player_0 = input('Ingrese el jugador: ') 
         a,lst = controller.Registros_jugador(cont, Player_0)
         print(lst)
-        #tabulateResults(lst)
+        tabulateResults(lst)
 
     elif int(inputs[0]) == 5: # REQUERIMIENTO 3
         pass
@@ -145,7 +145,12 @@ while True:
         pass
 
     elif int(inputs[0]) == 7: # REQUERIMIENTO 5
-        pass
+        LimiteInferior = float(input('Ingrese el limite inferior de Tiempo: '))
+        LimiteSuperior = float(input('Ingrese el limite Superior de Tiempo: '))
+        a,lst = controller.mejores_tiempos(cont, LimiteInferior, LimiteSuperior)
+
+        print(lst)
+        tabulateResults(lst)
 
     elif int(inputs[0]) == 8: # REQUERIMIENTO 6
         pass

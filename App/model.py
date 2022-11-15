@@ -61,7 +61,9 @@ def newAnalyzer():
     analyzer['categorias'] = lt.newList("SINGLE_LINKED", compareIds)
     analyzer['Game By Release Date'] = om.newMap(omaptype='RBT', comparefunction=compareDates)
     analyzer['Game By Platform'] = m.newMap(numelements=30, maptype='PROBING', comparefunction=comparePlatforms) 
-    analyzer['Game By Player'] = m.newMap(numelements=30, maptype='PROBING')
+    analyzer['Game By Player'] = om.newMap(omaptype='RBT', comparefunction=compareTimes)
+    analyzer['Game By Time'] = om.newMap(omaptype='RBT', comparefunction=compareTimes)
+    
     
 
     
@@ -157,11 +159,11 @@ def updateCategory(map, category):
         if i=="":  
             continue
         else:
-            entry = m.get(map["Game By Player"], i)
+            entry = om.get(map["Game By Player"], i)
             if entry is None:
                 datentry = newCategoryEntry(category)
                 addCategoryIndex(datentry, category)
-                m.put(map["Game By Player"], i, datentry)
+                om.put(map["Game By Player"], i, datentry)
             else:
                 datentry = me.getValue(entry)
                 addCategoryIndex(datentry, category)
@@ -186,7 +188,63 @@ def addCategoryIndex(datentry, category):
 
 
 
+#Carga del Req 5
+def addCategoryReq5(analyzer, category): 
 
+    lt.addLast(analyzer["categorias"], category)
+    updateCategoryReq5(analyzer, category)
+
+    return analyzer
+
+def updateCategoryReq5(map, category):
+    
+    jugador = category["Time_0"].split(", ")
+    print(jugador)
+    
+    for i in jugador:
+        if i=="":  
+            continue
+        else:
+            i=float(i)
+            entry = om.get(map["Game By Time"], i)
+            if entry is None:
+                datentry = newCategoryEntryReq5(category)
+                addCategoryIndexReq5(datentry, category)
+                om.put(map["Game By Time"], i, datentry)
+            else:
+                datentry = me.getValue(entry)
+                addCategoryIndexReq5(datentry, category)
+
+    
+
+def newCategoryEntryReq5(category):
+    entry = {"omYear": None}
+    entry['omYear'] = om.newMap(omaptype='RBT', comparefunction=compareDates)
+    return entry
+
+def addCategoryIndexReq5(datentry, category):
+    mapa_ordenado=datentry["omYear"]
+    
+    
+    tiempo = category["Time_0"]
+    entry = om.get(mapa_ordenado, tiempo)
+    if entry is None:
+        datentry = lt.newList('SINGLE_LINKED', compareTimes)
+        om.put(mapa_ordenado, tiempo, datentry)
+    else:
+        datentry = me.getValue(entry)
+    lt.addLast(datentry, category)
+
+
+
+
+
+
+
+
+
+
+# ============================== 
 def getFirstGames(analyzer):
     games = analyzer["videojuegos"]
     firstgames= lt.newList(datastructure='ARRAY_LIST')
@@ -247,7 +305,9 @@ def getLastCategory(analyzer):
 #REQ1 
 def Juegos_plataforma_rango(analyzer,plataforma_buscada,LimiteInferior,LimiteSuperior):
     abrol=m.get(analyzer["Game By Platform"],plataforma_buscada)
-   
+    
+    
+    
     LimiteInferior = dt.strptime(LimiteInferior, '%y-%m-%d')
     LimiteSuperior = dt.strptime(LimiteSuperior, '%y-%m-%d')
     if abrol is None:
@@ -302,6 +362,43 @@ def Registros_jugador(analyzer,Player_0):
         
 
         return lt.size(juegos),final
+
+
+
+#REQ5 
+def mejores_tiempos(analyzer, LimiteInferior, LimiteSuperior):
+    
+    abrol=analyzer["Game By Time"]
+    
+    
+    
+ 
+    lista=om.values(abrol,LimiteInferior,LimiteSuperior) #Queda guaradada una lista de listas, la información ya está ordenada
+    
+    juegos=lt.newList(datastructure='ARRAY_LIST') #Lista vacía donde se van a guardar los juegos
+    for i in lt.iterator(lista):
+
+        valores = om.valueSet(i['omYear'])
+       
+        for j in lt.iterator(valores):
+            for x in lt.iterator(j):
+                
+                lt.addLast(juegos,x)
+
+    juegos= ms.sort(juegos,compareYears5) #Se ordena la lista de juegos por año    
+    if lt.size(juegos) <5:
+        final=juegos
+    else:
+        final=lt.subList(juegos,1,5)
+
+    print(lt.size(juegos))
+    
+    
+
+    return lt.size(juegos),final
+    
+   
+    
    
 
 
@@ -325,6 +422,21 @@ def compareYears(game1, game2):
             return True
         else:
             return False
+    else:
+        return False
+
+#Req 5
+def compareYears5(game1, game2):
+    release_game1= game1["Record_Date_0"] #Se obtiene la fecha de lanzamiento del juego 1
+    release_game1= dt.strptime(release_game1, "%Y-%m-%dT%H:%M:%SZ") #Se convierte la fecha de lanzamiento del juego 1 a formato datetime
+    
+    release_game2= game2["Record_Date_0"] #Se obtiene la fecha de lanzamiento del juego 2
+    release_game2= dt.strptime(release_game2, "%Y-%m-%dT%H:%M:%SZ") #Se convierte la fecha de lanzamiento del juego 2 a formato datetime
+    
+
+    if release_game1 < release_game2: #Se compara la fecha de lanzamiento del juego 1 con la fecha de lanzamiento del juego 2
+        return True
+    
     else:
         return False
 
@@ -364,6 +476,27 @@ def compareTimes(time_1, time_2):
         return 1
     else:
         return -1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

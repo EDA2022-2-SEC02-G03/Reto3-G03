@@ -1,4 +1,5 @@
-﻿"""
+﻿
+"""
  * Copyright 2020, Departamento de sistemas y Computación,
  * Universidad de Los Andes
  *
@@ -63,6 +64,7 @@ def loadData(analyzer, porcentajedatos):
             input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
             for category in input_file:
                 model.addCategory(analyzer, category)
+                model.addCategoryReq5(analyzer, category)
 
 
     return analyzer
@@ -89,3 +91,6 @@ def Juegos_plataforma_rango(analyzer, plataforma,LimiteInferior,LimiteSuperior):
 def Registros_jugador(analyzer,Player_0):
     return model.Registros_jugador(analyzer,Player_0)
 
+# Requerimiento 3 
+def mejores_tiempos(analyzer, LimiteInferior, LimiteSuperior):
+    return model.mejores_tiempos(analyzer, LimiteInferior, LimiteSuperior)
