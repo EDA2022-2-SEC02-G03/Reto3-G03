@@ -110,12 +110,7 @@ while True:
         juegos=controller.getFirstGames(cont) 
         categorias=controller.getFirstCategory(cont)
         
-        print("Primeros y últimos 3 juegos cargados: ")
-        print(juegos[0]['elements'])
         
-        #tabulateResults
-        print("Primeras y últimas 3 categorias cargadas: ")
-        print(categorias[0]['elements'])
         #print(categorias)
         #print("Videojuegos cargados: " + str(controller.videojuegosSize(cont)))
         #print("Categorias cargadas: " + str(controller.categorySize(cont)))
@@ -131,23 +126,39 @@ while True:
         LimiteInferior = input('Ingrese el limite inferior de la fecha: ')
         LimiteSuperior = input('Ingrese el limite Superior de la fecha: ')
         a,lst = controller.Juegos_plataforma_rango(cont,plataforma,LimiteInferior,LimiteSuperior)
-        print("Los 5 juegos más recientes de la plataforma son: ")
-        print(lst)
+        #print("Los 5 juegos más recientes de la plataforma son: ")
+        #print(lst)
         #tabulateResults(lst)
 
 
         
     elif int(inputs[0]) == 4: # REQUERIMIENTO 2
-        pass
+        Player_0 = input('Ingrese el jugador: ') 
+        a,lst = controller.Registros_jugador(cont, Player_0)
+        print(lst)
+        tabulateResults(lst)
 
     elif int(inputs[0]) == 5: # REQUERIMIENTO 3
+        LimiteInferiorReq3 = int(input('Ingrese el limite inferior de intentos: '))
+        LimiteSuperiorReq3 = int(input('Ingrese el limite Superior de intentos: '))
+        lst = controller.Juegos_runs_intervalo(cont,LimiteInferiorReq3,LimiteSuperiorReq3)
+        print ("Los registros de menor duración por rango de intentos son: ")
+        print(lst)
+        tabulateResults(lst)
+
+
         pass
 
     elif int(inputs[0]) == 6: # REQUERIMIENTO 4
         pass
 
     elif int(inputs[0]) == 7: # REQUERIMIENTO 5
-        pass
+        LimiteInferior = float(input('Ingrese el limite inferior de Tiempo: '))
+        LimiteSuperior = float(input('Ingrese el limite Superior de Tiempo: '))
+        a,lst = controller.mejores_tiempos(cont, LimiteInferior, LimiteSuperior)
+
+        print(lst)
+        tabulateResults(lst)
 
     elif int(inputs[0]) == 8: # REQUERIMIENTO 6
         pass
