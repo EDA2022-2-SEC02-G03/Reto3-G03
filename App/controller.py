@@ -59,15 +59,17 @@ def loadData(analyzer, porcentajedatos):
             for game in input_file:
                 model.addVideojuegos(analyzer, game)
            
-        if x == "category":
+        else:
             file= cf.data_dir + x + "_data_urf-8-" + porcentajedatos + ".csv" #ruta archivo en una variable
             input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
-            for category in input_file:
-                model.addCategory(analyzer, category)
-                model.addCategoryReq5(analyzer, category)
+            for game in input_file:
+                model.addCategory(analyzer, game)
 
 
     return analyzer
+def top_juegos_rentables(analyzer,plataforma,top):
+    return model.top_juegos_rentables(analyzer,plataforma,top)
+
 
 # Funciones de ordenamiento
 
@@ -86,11 +88,3 @@ def getFirstCategory(analyzer):
 # Requerimiento 1
 def Juegos_plataforma_rango(analyzer, plataforma,LimiteInferior,LimiteSuperior):
     return model.Juegos_plataforma_rango(analyzer, plataforma,LimiteInferior,LimiteSuperior)
-
-# Requerimiento 2
-def Registros_jugador(analyzer,Player_0):
-    return model.Registros_jugador(analyzer,Player_0)
-
-# Requerimiento 3 
-def mejores_tiempos(analyzer, LimiteInferior, LimiteSuperior):
-    return model.mejores_tiempos(analyzer, LimiteInferior, LimiteSuperior)

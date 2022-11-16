@@ -139,6 +139,14 @@ while True:
         tabulateResults(lst)
 
     elif int(inputs[0]) == 5: # REQUERIMIENTO 3
+        LimiteInferiorReq3 = int(input('Ingrese el limite inferior de intentos: '))
+        LimiteSuperiorReq3 = int(input('Ingrese el limite Superior de intentos: '))
+        lst = controller.Juegos_runs_intervalo(cont,LimiteInferiorReq3,LimiteSuperiorReq3)
+        print ("Los registros de menor duración por rango de intentos son: ")
+        print(lst)
+        tabulateResults(lst)
+
+
         pass
 
     elif int(inputs[0]) == 6: # REQUERIMIENTO 4
@@ -156,7 +164,16 @@ while True:
         pass
 
     elif int(inputs[0]) == 9: # REQUERIMIENTO 7
-        pass
+        plataforma = input('Ingrese la plataforma: ')
+        top = int(input('Ingrese el top: '))
+        req=controller.top_juegos_rentables(cont,plataforma,top)
+        tabulate_=[]
+        for i in lt.iterator(req):
+            juego=i["video"]
+            tabulate_.append([juego["Name"],juego["Release_Date"],juego["Platforms"],juego["Genres"],juego["StreamRevenue"],juego["MarketShare"],juego["Time_AVG"],juego["total_runs"]])
+        print(tabulate(tabulate_, headers=['Name','Release_Date','Platforms','Genres','StreamRevenue','MarketShare','Time_AVG','total_runs'], tablefmt='fancy_grid',maxcolwidths=[20,20,20,20,20,20,20,20]))
+
+
 
     else:
         sys.exit(0)
