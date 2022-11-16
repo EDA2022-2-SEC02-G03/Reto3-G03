@@ -150,7 +150,12 @@ while True:
         pass
 
     elif int(inputs[0]) == 6: # REQUERIMIENTO 4
-        pass
+        LimiteInferior = (input('Ingrese el limite inferior de Tiempo: '))
+        LimiteSuperior = (input('Ingrese el limite Superior de Tiempo: '))
+        a,lst = controller.reg_lentos_rango(cont, LimiteInferior, LimiteSuperior)
+
+        print(lst)
+        tabulateResults(lst)
 
     elif int(inputs[0]) == 7: # REQUERIMIENTO 5
         LimiteInferior = float(input('Ingrese el limite inferior de Tiempo: '))

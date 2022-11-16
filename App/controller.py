@@ -1,5 +1,4 @@
-﻿
-"""
+﻿"""
  * Copyright 2020, Departamento de sistemas y Computación,
  * Universidad de Los Andes
  *
@@ -59,13 +58,15 @@ def loadData(analyzer, porcentajedatos):
             for game in input_file:
                 model.addVideojuegos(analyzer, game)
            
-        else:
+        if x == "category":
             file= cf.data_dir + x + "_data_urf-8-" + porcentajedatos + ".csv" #ruta archivo en una variable
             input_file = csv.DictReader(open(file, encoding="utf-8")) #abrir archivo para leer como dict
-            for game in input_file:
-                model.addCategory(analyzer, game)
-
-
+            for category in input_file:
+                model.addCategory(analyzer, category)
+                model.addCategoryReq5(analyzer, category)
+                model.addCategoryReq4(analyzer,category)
+                model.addCategoryReq3(analyzer, category)
+    model.addReq7(analyzer)
     return analyzer
 def top_juegos_rentables(analyzer,plataforma,top):
     return model.top_juegos_rentables(analyzer,plataforma,top)
@@ -88,3 +89,15 @@ def getFirstCategory(analyzer):
 # Requerimiento 1
 def Juegos_plataforma_rango(analyzer, plataforma,LimiteInferior,LimiteSuperior):
     return model.Juegos_plataforma_rango(analyzer, plataforma,LimiteInferior,LimiteSuperior)
+
+# Requerimiento 2
+def Registros_jugador(analyzer,Player_0):
+    return model.Registros_jugador(analyzer,Player_0)
+
+# Requerimiento 3
+def Juegos_runs_intervalo(analyzer, LimiteInferiorReq3, LimiteSuperiorReq3):
+    return model.Juegos_runs_intervalo(analyzer, LimiteInferiorReq3, LimiteSuperiorReq3)
+# Req 4
+def reg_lentos_rango(analyzer,inf,sup):
+
+    return model.reg_lentos_rango(analyzer,inf,sup)
