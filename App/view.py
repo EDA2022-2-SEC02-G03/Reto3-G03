@@ -126,9 +126,9 @@ while True:
         LimiteInferior = input('Ingrese el limite inferior de la fecha: ')
         LimiteSuperior = input('Ingrese el limite Superior de la fecha: ')
         a,lst = controller.Juegos_plataforma_rango(cont,plataforma,LimiteInferior,LimiteSuperior)
-        #print("Los 5 juegos más recientes de la plataforma son: ")
-        #print(lst)
-        #tabulateResults(lst)
+        print("Los 5 juegos más recientes de la plataforma son: ")
+        print(lst)
+        tabulateResults(lst)
 
 
         
