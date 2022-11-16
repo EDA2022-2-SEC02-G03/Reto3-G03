@@ -240,6 +240,7 @@ def addCategoryIndexReq4(datentry, category):
         datentry = me.getValue(entry)
     lt.addLast(datentry, category)
 
+
 #REQ4
 def reg_lentos_rango(analyzer, LimiteInferior, LimiteSuperior):
 
@@ -247,6 +248,36 @@ def reg_lentos_rango(analyzer, LimiteInferior, LimiteSuperior):
     
     abrol=analyzer["Game By Record Date"]
     
+    
+    
+    
+    lista=om.values(abrol,LimiteInferior,LimiteSuperior) #Queda guaradada una lista de listas, la información ya está ordenada
+    
+    
+    juegos=lt.newList(datastructure='ARRAY_LIST') #Lista vacía donde se van a guardar los juegos
+    for i in lt.iterator(lista):
+
+        valores = om.valueSet(i['omYear'])
+       
+        for j in lt.iterator(valores):
+            for x in lt.iterator(j):
+                
+                lt.addLast(juegos,x)
+
+    juegos= ms.sort(juegos,compareYears5) #Se ordena la lista de juegos por año    
+    if lt.size(juegos) <5:
+        final=juegos
+    else:
+        final=lt.subList(juegos,1,5)
+
+    (lt.size(juegos))
+    
+    
+
+    return lt.size(juegos),final
+
+
+
 
         
 
@@ -335,7 +366,7 @@ def addCategoryReq5(analyzer, category):
 def updateCategoryReq5(map, category):
     
     jugador = category["Time_0"].split(", ")
-    print(jugador)
+    #print(jugador)
     
     for i in jugador:
         if i=="":  
@@ -567,7 +598,7 @@ def mejores_tiempos(analyzer, LimiteInferior, LimiteSuperior):
     else:
         final=lt.subList(juegos,1,5)
 
-    print(lt.size(juegos))
+    #print(lt.size(juegos))
     
     
 

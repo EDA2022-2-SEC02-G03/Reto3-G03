@@ -154,7 +154,7 @@ while True:
         LimiteSuperior = (input('Ingrese el limite Superior de Tiempo: '))
         a,lst = controller.reg_lentos_rango(cont, LimiteInferior, LimiteSuperior)
 
-        print(lst)
+        print(lst)#a
         tabulateResults(lst)
 
     elif int(inputs[0]) == 7: # REQUERIMIENTO 5
