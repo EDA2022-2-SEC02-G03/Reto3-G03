@@ -164,7 +164,16 @@ while True:
         pass
 
     elif int(inputs[0]) == 9: # REQUERIMIENTO 7
-        pass
+        plataforma = input('Ingrese la plataforma: ')
+        top = int(input('Ingrese el top: '))
+        req=controller.top_juegos_rentables(cont,plataforma,top)
+        tabulate_=[]
+        for i in lt.iterator(req):
+            juego=i["video"]
+            tabulate_.append([juego["Name"],juego["Release_Date"],juego["Platforms"],juego["Genres"],juego["StreamRevenue"],juego["MarketShare"],juego["Time_AVG"],juego["total_runs"]])
+        print(tabulate(tabulate_, headers=['Name','Release_Date','Platforms','Genres','StreamRevenue','MarketShare','Time_AVG','total_runs'], tablefmt='fancy_grid',maxcolwidths=[20,20,20,20,20,20,20,20]))
+
+
 
     else:
         sys.exit(0)

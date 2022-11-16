@@ -24,6 +24,7 @@
  * Dario Correal - Version inicial
  """
 
+import math
 from select import select
 import time
 
@@ -34,6 +35,7 @@ from DISClib.ADT import orderedmap as om
 from DISClib.ADT import map as m
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+
 from DISClib.Algorithms.Sorting import mergesort as ms
 assert cf
 
@@ -85,6 +87,7 @@ def addGameById(map, game):
     """
     """
     id=game["Game_Id"]
+    
     m.put(map["Game by Id"], id, game) 
 
 def updateGame(map, game):
@@ -96,40 +99,42 @@ def updateGame(map, game):
     plataforma=game["Platforms"].split(", ")
     
     for i in plataforma:
-        if i=="": #Para cuando no tiene plataformas 
-            continue
-        else:
-            entry = m.get(map["Game By Platform"], i) #Busca la llave en el arbol
-            if entry is None:
-                datentry = newDataEntry(game)
+        entry = m.get(map["Game By Platform"], i) #Busca la llave en el arbol
+        if entry is None:
+            datentry = newDataEntry(game,i)
 
-                addDateIndex(datentry, game)
-                m.put(map["Game By Platform"], i, datentry)
-            else:
-                datentry = me.getValue(entry)
-                addDateIndex(datentry, game)
+            addDateIndex(datentry, game)
+            m.put(map["Game By Platform"], i, datentry)
+        else:
+            datentry = me.getValue(entry)
+            addDateIndex(datentry, game)
     
 
 
-def newDataEntry(game):
+def newDataEntry(game, plataforma):
     #Crea una valor para la llave en el indice por fecha #Req 1
-    entry = {"omYear": None}
+    entry = {"omYear": None,"platform":plataforma}
     entry['omYear'] = om.newMap(omaptype='RBT', comparefunction=compareDates)
+    entry["game_id"] = m.newMap(numelements=30, maptype='PROBING', comparefunction=compareIds_hash)
     return entry
 
 def addDateIndex(datentry, game):
     #Actualizar el valor de la llave #Req 1
     mapa_ordenado=datentry["omYear"]
+    hash_games=datentry["game_id"]
     
     release_date = game["Release_Date"]
     release_date= dt.strptime(release_date, '%y-%m-%d')
     entry = om.get(mapa_ordenado, release_date)
     if entry is None:
-        datentry = lt.newList('SINGLE_LINKED', compareIds)
-        om.put(mapa_ordenado, release_date, datentry)
+        datentry1 = lt.newList('SINGLE_LINKED', compareIds)
+        om.put(mapa_ordenado, release_date, datentry1)
     else:
-        datentry = me.getValue(entry)
-    lt.addLast(datentry, game)
+        datentry1 = me.getValue(entry)
+    lt.addLast(datentry1, game)
+
+    id=game["Game_Id"]
+    m.put(hash_games, id, {"video":game,"registros":0})
 
 def comparePlatforms(keyname, platform):
     """
@@ -151,8 +156,46 @@ def addCategory(analyzer, category):
 
     lt.addLast(analyzer["categorias"], category)
     updateCategory(analyzer, category)
+    updateDataGame(analyzer, category)
 
     return analyzer
+def updateDataGame(analyzer, category):
+    #Mete al arbol el game segun su fecha de lanzamiento #Req 2
+    """
+    """
+    plataformas= analyzer["Game By Platform"]
+    game_id=category["Game_Id"]
+    entry = me.getValue(m.get(analyzer["Game by Id"], game_id))
+    plataformas=entry["Platforms"].split(", ")
+    # Contar registros que hay en cada juego por plataforma, primero obteniendo el juego con base al game ID que tiene el registro, 
+    # luego con ese juego se actualiza el mapa que guarda información y contadores del juego por plataforma
+    for i in plataformas:
+        plataforma=me.getValue(m.get(analyzer["Game By Platform"], i))
+        juego_=me.getValue(m.get(plataforma["game_id"], game_id))
+        juego=juego_["video"]
+        if not "TimeAVG" in juego:
+            time0=category["Time_0"]
+            time1=category["Time_1"]
+            time2=category["Time_2"]
+            cont=0
+            promedio=0
+            if time0!="":
+                cont+=1
+                promedio+=float(time0)
+            if time1!="":
+                cont+=1
+                promedio+=float(time1)
+            if time2!="":
+                cont+=1
+                promedio+=float(time2)
+            juego["TimeAVG"]=promedio/cont
+        juego_["registros"]+=1
+        
+    
+    
+        
+
+    
 
 def updateCategory(map, category):
     
@@ -274,6 +317,44 @@ def addCategoryIndexReq5(datentry, category):
     lt.addLast(datentry, category)
 
 
+# carga de req 7 para cálculo de revenue
+
+def addReq7(analyzer):
+    tabla_hash=analyzer["Game By Platform"]
+    valueset_tabla=m.valueSet(tabla_hash)
+    for i in lt.iterator(valueset_tabla):
+        juegos=m.valueSet(i["game_id"])
+        lista=lt.newList("ARRAY_LIST")
+        for j in lt.iterator(juegos):
+            StreamRevenue,MarketShare,Time_AVG,total_runs=calcStreamRevenue(j,lt.size(valueset_tabla))
+            j["video"]["StreamRevenue"]=round(StreamRevenue,2)
+            j["video"]["MarketShare"]=MarketShare
+            j["video"]["Time_AVG"]=round(Time_AVG,2)
+            j["video"]["total_runs"]=total_runs
+            lt.addLast(lista,j)
+        lista= ms.sort(lista,sortcmp_req7)
+        m.put(tabla_hash,i["platform"],lista)
+    
+        
+            
+        
+
+def calcStreamRevenue(juego_,num_registros_plataforma):
+    juego=juego_["video"]
+    año_lanzamiento= dt.strptime(juego["Release_Date"],"%y-%m-%d").year
+    if año_lanzamiento>=2018:
+        antiguedad=año_lanzamiento-2017
+    elif 1998<año_lanzamiento<2018:
+        antiguedad=404.6-((1/5)*año_lanzamiento)
+    else:
+        antiguedad=5
+    popularidad=math.log(int(juego["Total_Runs"]))
+    time_avg=juego["TimeAVG"]
+    revenue=(popularidad*time_avg)/antiguedad
+    market_share=juego_["registros"]/num_registros_plataforma
+    stream_revenue=revenue*market_share
+    return stream_revenue,market_share,time_avg,juego["Total_Runs"]
+
 
 # ============================== 
 def getFirstGames(analyzer):
@@ -301,7 +382,10 @@ def getLastGames(analyzer):
             game= lt.getElement(games,i)
             lt.addLast(lastgames,game)
     return lastgames
-
+def sortcmp_req7(game1,game2):
+    if (game1["video"]["StreamRevenue"] > game2["video"]["StreamRevenue"]):
+        return True
+    return False
 def getFirstCategory(analyzer):
     categories = analyzer["categorias"]
     firstcategories= lt.newList(datastructure='ARRAY_LIST')
@@ -487,7 +571,11 @@ def compareYears5(game1, game2):
     else:
         return False
 
-
+#Req 7
+def top_juegos_rentables(analyzer,plataforma,top):
+    hash_=analyzer["Game By Platform"]
+    juegos=me.getValue(m.get(hash_,plataforma))
+    return lt.subList(juegos,1,top)
 # ==============================
 # Funciones de Comparacion
 # ==============================

@@ -65,8 +65,11 @@ def loadData(analyzer, porcentajedatos):
                 model.addCategory(analyzer, category)
                 model.addCategoryReq5(analyzer, category)
                 model.addCategoryReq3(analyzer, category)
-
+    model.addReq7(analyzer)
     return analyzer
+def top_juegos_rentables(analyzer,plataforma,top):
+    return model.top_juegos_rentables(analyzer,plataforma,top)
+
 
 # Funciones de ordenamiento
 
