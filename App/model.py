@@ -239,8 +239,6 @@ def addCategoryIndexReq4(datentry, category):
     else:
         datentry = me.getValue(entry)
     lt.addLast(datentry, category)
-
-
 #REQ4
 def reg_lentos_rango(analyzer, LimiteInferior, LimiteSuperior):
 
@@ -277,6 +275,11 @@ def reg_lentos_rango(analyzer, LimiteInferior, LimiteSuperior):
     return lt.size(juegos),final
 
 
+
+
+        
+
+    
 
 
         
@@ -366,7 +369,7 @@ def addCategoryReq5(analyzer, category):
 def updateCategoryReq5(map, category):
     
     jugador = category["Time_0"].split(", ")
-    #print(jugador)
+    print(jugador)
     
     for i in jugador:
         if i=="":  
@@ -419,8 +422,8 @@ def addReq7(analyzer):
             j["video"]["total_runs"]=total_runs
             lt.addLast(lista,j)
         lista= ms.sort(lista,sortcmp_req7)
-        m.put(tabla_hash,i["platform"],lista)
-    
+        me.getValue(m.get(tabla_hash,i["platform"]))["game_id"]=lista
+
         
             
         
@@ -505,19 +508,15 @@ def getLastCategory(analyzer):
 
 #REQ1 
 def Juegos_plataforma_rango(analyzer,plataforma_buscada,LimiteInferior,LimiteSuperior):
-    abrol=m.get(analyzer["Game By Platform"],plataforma_buscada)
-    
-    
-    
-    LimiteInferior = dt.strptime(LimiteInferior, '%y-%m-%d')
-    LimiteSuperior = dt.strptime(LimiteSuperior, '%y-%m-%d')
+    abrol=m.get(analyzer["Game By Platform"],plataforma_buscada) #Busca la llave en el arbol
+    LimiteInferior = dt.strptime(LimiteInferior, '%Y-%m-%d') #Convierte el limite inferior a formato datetime
+    LimiteSuperior = dt.strptime(LimiteSuperior, '%Y-%m-%d') #Convierte el limite superior a formato datetime
     if abrol is None:
         return None
     else:
         arbol=me.getValue(abrol)
         arbol=arbol["omYear"]
         lista=om.values(arbol,LimiteInferior,LimiteSuperior) #Queda guaradada una lista de listas, la información ya está ordenada
-       
         juegos=lt.newList(datastructure='ARRAY_LIST') #Lista vacía donde se van a guardar los juegos
         for i in lt.iterator(lista):
             for j in lt.iterator(i):
@@ -528,8 +527,6 @@ def Juegos_plataforma_rango(analyzer,plataforma_buscada,LimiteInferior,LimiteSup
             final=juegos
         else:
             final=lt.subList(juegos,1,5)
-        
-        
 
         return lt.size(juegos),final
 
@@ -598,7 +595,7 @@ def mejores_tiempos(analyzer, LimiteInferior, LimiteSuperior):
     else:
         final=lt.subList(juegos,1,5)
 
-    #print(lt.size(juegos))
+    print(lt.size(juegos))
     
     
 
@@ -661,7 +658,7 @@ def compareYears5(game1, game2):
 def top_juegos_rentables(analyzer,plataforma,top):
     hash_=analyzer["Game By Platform"]
     juegos=me.getValue(m.get(hash_,plataforma))
-    return lt.subList(juegos,1,top)
+    return lt.subList(juegos["game_id"],1,top)
 # ==============================
 # Funciones de Comparacion
 # ==============================
@@ -705,25 +702,3 @@ def compareTimes(time_1, time_2):
         return 1
     else:
         return -1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
